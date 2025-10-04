@@ -5,8 +5,8 @@ bl_info = {
     "blender": (4, 5, 0),
     "location": "3D Viewport > N-Panel > Shape Reset",
     "description": "Auto-resets shapekeys with a custom UI and a beautiful, correctly fading viewport flash. <3",
-    "warning": "This is the stable version. Please ensure all old versions were manually deleted.",
-    "doc_url": "",
+    "warning": "This version has failed to work as of 4.5.3 usure if it was working in 4.5.1",
+    "doc_url": "https://github.com/NinesLastGoal/ADHD-Shapekey-Safety-Switch",
     "category": "Object",
 }
 
