@@ -1,11 +1,11 @@
 bl_info = {
     "name": "Reset Shapekeys on Edit Exit (Final Debug)",
     "author": "Gemini+Nines 4 Ever",
-    "version": (4, 4),
-    "blender": (4, 5, 0),
+    "version": (4, 5, 3),
+    "blender": (4, 5, 3),
     "location": "3D Viewport > N-Panel > Shape Reset",
     "description": "Auto-resets shapekeys with a custom UI and a beautiful, correctly fading viewport flash. <3",
-    "warning": "This version has failed to work as of 4.5.3 usure if it was working in 4.5.1",
+    "warning": "",
     "doc_url": "https://github.com/NinesLastGoal/ADHD-Shapekey-Safety-Switch",
     "category": "Object",
 }
@@ -121,7 +121,7 @@ _handler = None
 _previous_mode = None
 
 def reset_shapekeys_on_exit():
-    obj = bpy.context.object
+    obj = bpy.context.view_layer.objects.active
     if obj and obj.type == 'MESH' and obj.data and obj.data.shape_keys:
         scene = bpy.context.scene
         was_changed = False
@@ -139,15 +139,15 @@ def reset_shapekeys_on_exit():
             
     return None
 
-def on_mode_change(scene):
+def on_mode_change(scene, depsgraph):
     global _previous_mode
     if not hasattr(bpy.context, "scene") or not bpy.context.scene:
         return
     if not bpy.context.scene.shapekey_reset_enabled:
         return
         
-    obj = bpy.context.object
-    if not obj or not hasattr(obj, 'mode'):
+    obj = bpy.context.view_layer.objects.active
+    if not obj or obj.type != 'MESH' or not hasattr(obj, 'mode'):
         _previous_mode = None
         return
 
@@ -202,7 +202,7 @@ def register():
     
     _handler = on_mode_change
     bpy.app.handlers.depsgraph_update_post.append(_handler)
-    print("Shapekey Reset Addon Registered.")
+    print("Shapekey Reset Addon Registered (4.5.3).")
 
 def unregister():
     global _handler

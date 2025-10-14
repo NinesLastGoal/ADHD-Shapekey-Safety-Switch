@@ -117,8 +117,13 @@ def reset_shapekeys_on_exit():
     return None
 
 
-def on_mode_change(scene):
+def on_mode_change(scene, depsgraph):
     global _previous_mode
+    if not hasattr(bpy.context, "scene") or not bpy.context.scene:
+        return
+    if not bpy.context.scene.shapekey_reset_enabled:
+        return
+    
     obj = bpy.context.view_layer.objects.active
     if not obj or obj.type != "MESH":
         _previous_mode = None
