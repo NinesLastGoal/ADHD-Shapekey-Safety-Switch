@@ -105,7 +105,7 @@ _handler = None
 _previous_mode = None
 
 def reset_shapekeys_on_exit():
-    obj = bpy.context.object
+    obj = bpy.context.view_layer.objects.active
     if obj and obj.type == 'MESH' and obj.data and obj.data.shape_keys:
         scene = bpy.context.scene
         was_changed = False
@@ -122,12 +122,15 @@ def reset_shapekeys_on_exit():
             
     return None
 
-def on_mode_change(scene):
+def on_mode_change(scene, depsgraph):
     global _previous_mode
-    if not hasattr(bpy.context, "scene") or not bpy.context.scene: return
-    if not bpy.context.scene.shapekey_reset_enabled: return
-    obj = bpy.context.object
-    if not obj or not hasattr(obj, 'mode'):
+    if not hasattr(bpy.context, "scene") or not bpy.context.scene:
+        return
+    if not bpy.context.scene.shapekey_reset_enabled:
+        return
+    
+    obj = bpy.context.view_layer.objects.active
+    if not obj or obj.type != 'MESH' or not hasattr(obj, 'mode'):
         _previous_mode = None
         return
 
@@ -175,13 +178,13 @@ def register():
     bpy.types.Scene.shapekey_flash_enabled = bpy.props.BoolProperty(name="Enable Viewport Flash", default=True)
     
     _handler = on_mode_change
-    bpy.app.handlers.mode_update_post.append(_handler)
-    print("Shapekey Reset Addon Registered.")
+    bpy.app.handlers.depsgraph_update_post.append(_handler)
+    print("Shapekey Reset Addon Registered (4.5.3).")
 
 def unregister():
     global _handler
-    if _handler and _handler in bpy.app.handlers.mode_update_post:
-        bpy.app.handlers.mode_update_post.remove(_handler)
+    if _handler and _handler in bpy.app.handlers.depsgraph_update_post:
+        bpy.app.handlers.depsgraph_update_post.remove(_handler)
     _handler = None
     
     try:
